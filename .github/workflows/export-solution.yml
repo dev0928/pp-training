@@ -1,0 +1,51 @@
+name: Deploy Power_Apps_Solution
+
+on:
+  workflow_dispatch:
+    inputs:
+      solution_name:
+        description: 'name of the solution to worked on from Power Platform'
+        required: true
+        default: PowerAppsDeployment
+      solution_exported_folder:
+        description: 'folder name for staging the exported solution *do not change*'
+        required: true
+        default: out/exported/
+      solution_folder:
+        description: 'staging the unpacked solution folder before check-in *do not change*'
+        required: true
+        default: out/solutions/
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v2
+      - name: export-solution-managed action
+        uses: microsoft/powerplatform-actions/export-solution@v0
+        with:
+          environment-url: ${{vars.DEV_ENVIRONMENT_URL}}
+          tenant-id: ${{ vars.TENANT_ID }}
+          app-id: ${{ vars.APPLICATION_ID }}
+          client-secret: ${{ secrets.CLIENT_SECRET }}
+          solution-name: ${{ github.event.inputs.solution_name }}
+          solution-output-file: ${{ github.event.inputs.solution_exported_folder}}/${{ github.event.inputs.solution_name }}_managed.zip
+          managed: true
+      - name: export-solution-unmanaged action
+        uses: microsoft/powerplatform-actions/export-solution@v0
+        with:
+          environment-url: ${{secrets.DEV_ENVIRONMENT_URL}}
+          tenant-id: ${{ vars.TENANT_ID }}
+          app-id: ${{ vars.APPLICATION_ID }}
+          client-secret: ${{ secrets.CLIENT_SECRET }}
+          solution-name: ${{ github.event.inputs.solution_name }}
+          solution-output-file: ${{ github.event.inputs.solution_exported_folder}}/${{ github.event.inputs.solution_name }}.zip
+          managed: false          
+      - name: unpack-solution action
+        uses: microsoft/powerplatform-actions/unpack-solution@v0
+        with:
+          solution-file: ${{ github.event.inputs.solution_exported_folder}}/${{ github.event.inputs.solution_name }}.zip
+          solution-folder: ${{ github.event.inputs.solution_folder}}/${{ github.event.inputs.solution_name }}
+          solution-type: 'Both'
+          overwrite-files: true
