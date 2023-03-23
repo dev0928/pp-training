@@ -1,4 +1,4 @@
-name: Deploy Power_Apps_Solution
+name: Export Power_Apps_Solution
 
 on:
   workflow_dispatch:
@@ -35,7 +35,7 @@ jobs:
       - name: export-solution-unmanaged action
         uses: microsoft/powerplatform-actions/export-solution@v0
         with:
-          environment-url: ${{secrets.DEV_ENVIRONMENT_URL}}
+          environment-url: ${{vars.DEV_ENVIRONMENT_URL}}
           tenant-id: ${{ vars.TENANT_ID }}
           app-id: ${{ vars.APPLICATION_ID }}
           client-secret: ${{ secrets.CLIENT_SECRET }}
