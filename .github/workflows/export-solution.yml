@@ -15,7 +15,10 @@ on:
         description: 'staging the unpacked solution folder before check-in *do not change*'
         required: true
         default: out/solutions/
-
+      solution_target_folder:
+        description: 'staging the unpacked solution folder before check-in *do not change*'
+        required: true
+        default: solutions/
 permissions:
   contents: write
 jobs:
@@ -54,7 +57,7 @@ jobs:
       
       - name: Commit changes
         run: |
-          cp -r ${{ github.event.inputs.solution_folder}}/${{ github.event.inputs.solution_name }} ./${{ github.event.inputs.solution_folder}}/${{ github.event.inputs.solution_name }} 
+          cp -r ${{ github.event.inputs.solution_folder}}/${{ github.event.inputs.solution_name }} ./${{ github.event.inputs.solution__target_folder}}/${{ github.event.inputs.solution_name }} 
           git config --global user.email "no-reply@github.com"
           git config --global user.name "GitHub Actions"
           git checkout main
